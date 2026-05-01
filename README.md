@@ -1,16 +1,29 @@
-# 🎙️ Deep Learning Based Arabic Audio Understanding and Retrieval System
+# 🎙️ Arabic Automatic Speech Recognition (ASR)
+## Deep Learning Based Arabic Audio Understanding and Retrieval System
 
-> An end-to-end Automatic Speech Recognition (ASR) pipeline for Arabic language using deep learning, built with OpenAI Whisper and evaluated on two Arabic speech datasets.
+> An end-to-end Arabic Speech Recognition pipeline using OpenAI Whisper Medium, evaluated on two Arabic speech datasets with full EDA, WER/CER evaluation, and an interactive Gradio demo.
+
+---
+
+## 📊 Results
+
+| Metric | Arabic Speech Corpus | Common Voice Arabic |
+|--------|---------------------|---------------------|
+| **Samples** | 100 | 100 |
+| **WER** | N/A (phonetic refs) | 52.17% |
+| **CER** | N/A (phonetic refs) | 21.46% |
+| **Word Accuracy** | Visually accurate ✅ | 47.83% |
+| **Avg Duration** | 10.30s | 4.52s |
 
 ---
 
 ## 📌 Project Overview
 
-This project implements an Arabic Speech Recognition system capable of transcribing Arabic audio into text. The system leverages **OpenAI Whisper Medium**, a state-of-the-art transformer-based model trained on 680,000 hours of multilingual speech data, with native Arabic support.
+This project implements a complete Arabic ASR system using **OpenAI Whisper Medium** (307M parameters), a transformer-based model trained on 680,000 hours of multilingual speech. The pipeline covers exploratory data analysis, audio preprocessing, transcription, WER/CER evaluation, and an interactive demo interface.
 
-The project is structured into two Jupyter notebooks:
-- **`eda.ipynb`** — Exploratory Data Analysis of both datasets
-- **`main.ipynb`** — Full ASR pipeline, evaluation, and interactive demo
+**Two notebooks:**
+- `eda.ipynb` — Exploratory Data Analysis (waveforms, spectrograms, statistics)
+- `Main pipeline.ipynb` — Full ASR pipeline, evaluation, and Gradio demo
 
 ---
 
@@ -38,11 +51,12 @@ Arabic Text Output (Unicode)
 Evaluation (WER / CER)
 ```
 
-### Why CNN + Transformer?
+### Model Components
+
 | Component | Role |
 |-----------|------|
 | **CNN Stem** | Extracts local acoustic features from the spectrogram |
-| **Transformer Encoder** | Captures long-range dependencies across the audio |
+| **Transformer Encoder** | Captures long-range audio dependencies |
 | **Transformer Decoder** | Auto-regressively generates Arabic text tokens |
 
 ---
@@ -50,35 +64,57 @@ Evaluation (WER / CER)
 ## 📁 Datasets
 
 ### Dataset 1 — Arabic Speech Corpus
-| Property | Value |
-|----------|-------|
-| Source | [en.arabicspeechcorpus.com](https://en.arabicspeechcorpus.com) |
-| Speaker | Single native MSA speaker |
-| Quality | Studio-recorded (high SNR) |
-| Format | WAV, 16kHz |
-| Samples | 100 test sentences |
-| References | Buckwalter phonetic transliteration |
 
-### Dataset 2 — Mozilla Common Voice Arabic
 | Property | Value |
 |----------|-------|
-| Source | [Mozilla Common Voice](https://commonvoice.mozilla.org) |
-| Speakers | Multiple (crowd-sourced) |
-| Quality | Variable (consumer devices) |
-| Format | MP3, 48kHz |
-| References | Arabic script ✅ (enables real WER) |
+| **Source** | [Arabic Speech Corpus](https://en.arabicspeechcorpus.com/) |
+| **Download** | https://en.arabicspeechcorpus.com/ |
+| **Speaker** | Single native MSA speaker |
+| **Quality** | Studio-recorded (high SNR) |
+| **Format** | WAV, 16kHz |
+| **Test Samples** | 100 sentences |
+| **References** | Buckwalter phonetic transliteration |
+| **License** | Free for research use |
+
+### Dataset 2 — Mozilla Common Voice Arabic (v25.0)
+
+| Property | Value |
+|----------|-------|
+| **Source** | [Mozilla Common Voice](https://commonvoice.mozilla.org/en/datasets) |
+| **Download** | https://commonvoice.mozilla.org/en/datasets → Select Arabic (ar) |
+| **Speakers** | Multiple crowd-sourced speakers |
+| **Quality** | Variable (consumer microphones) |
+| **Format** | MP3, 48kHz |
+| **Test Samples** | 10,508 available (100 used) |
+| **References** | Arabic script ✅ (real WER calculation) |
+| **License** | CC-0 (Public Domain) |
+
+> **Note:** After downloading Common Voice, extract and place at:
+> `data/common_voice/<extracted_folder>/cv-corpus-25.0-2026-03-09/ar/`
 
 ---
 
-## 📊 Results
+## 🗂️ Project Structure
 
-| Metric | Value |
-|--------|-------|
-| **Word Error Rate (WER)** | Reported in `main.ipynb` |
-| **Character Error Rate (CER)** | Reported in `main.ipynb` |
-| **Word Accuracy** | Reported in `main.ipynb` |
-| **Dataset 1 Quality** | Visually accurate (phonetic refs only) |
-
+```
+Arabic-Speech-Recognition-ASR/
+│
+├── eda.ipynb                  ← Exploratory Data Analysis
+├── Main pipeline.ipynb        ← Full ASR pipeline + Demo
+│
+├── asc_transcriptions.csv     ← Arabic Speech Corpus results
+├── cv_transcriptions.csv      ← Common Voice results + WER
+├── evaluation_summary.csv     ← Final metrics summary
+│
+├── eda_waveform_asc.png       ← Waveform & spectrogram plots
+├── eda_comparison.png         ← Dataset audio comparison
+├── eda_statistics.png         ← Duration & word count stats
+├── eda_word_freq.png          ← Word frequency analysis
+├── eda_quality.png            ← Signal quality analysis
+├── evaluation_results.png     ← WER/CER charts
+├── error_analysis.png         ← Error breakdown
+└── README.md
+```
 
 ---
 
@@ -86,47 +122,67 @@ Evaluation (WER / CER)
 
 ### Prerequisites
 - Python 3.9+
-- FFmpeg (required by Whisper for audio decoding)
+- FFmpeg
 
 ### Install FFmpeg (Windows)
-1. Download from: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
-2. Extract and move to `C:\ffmpeg`
-3. Add `C:\ffmpeg\bin` to your system PATH
+1. Download: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip
+2. Extract → move to `C:\ffmpeg`
+3. Add `C:\ffmpeg\bin` to system PATH
 4. Verify: `ffmpeg -version`
 
 ### Install Python Dependencies
 
 ```bash
-pip install openai-whisper torch torchaudio datasets transformers jiwer gradio soundfile matplotlib seaborn librosa arabic-reshaper python-bidi
+pip install openai-whisper torch torchaudio datasets transformers jiwer gradio soundfile matplotlib seaborn librosa arabic-reshaper python-bidi pandas numpy scipy
 ```
 
-Or using the requirements file:
+---
 
-```bash
-pip install -r requirements.txt
-```
+## 📥 Dataset Setup
+
+### Dataset 1 — Arabic Speech Corpus
+1. Go to https://en.arabicspeechcorpus.com/
+2. Download the corpus
+3. Extract to: `data/arabic_speech/arabic-speech-corpus/`
+
+### Dataset 2 — Mozilla Common Voice Arabic
+1. Go to https://commonvoice.mozilla.org/en/datasets
+2. Find **Arabic (ar)** → enter email → Download
+3. Extract to: `data/common_voice/`
 
 ---
 
 ## 🚀 Usage
 
-### 1. Exploratory Data Analysis
-Open and run `eda.ipynb` to explore the datasets:
+### 1. Run EDA
 ```bash
 jupyter notebook eda.ipynb
 ```
 
-### 2. Run the Full Pipeline
-Open and run `main.ipynb` to transcribe audio and evaluate:
+### 2. Run Main Pipeline
 ```bash
-jupyter notebook main.ipynb
+jupyter notebook "Main pipeline.ipynb"
 ```
 
 ### 3. Interactive Demo
-The last cell of `main.ipynb` launches a Gradio web interface:
+The last cell of `Main pipeline.ipynb` launches a Gradio interface:
 - Upload any Arabic `.wav` or `.mp3` file
-- Or record directly from your microphone
-- Get instant Arabic text transcription
+- Or record from your microphone
+- Get instant Arabic transcription
+
+---
+
+## 📈 Visualizations
+
+| Plot | Description |
+|------|-------------|
+| `eda_waveform_asc.png` | Waveform, Mel spectrogram, MFCC |
+| `eda_comparison.png` | ASC vs Common Voice audio quality |
+| `eda_statistics.png` | Duration & word count distributions |
+| `eda_word_freq.png` | Top Arabic words frequency |
+| `eda_quality.png` | SNR & signal energy analysis |
+| `evaluation_results.png` | WER/CER charts & model comparison |
+| `error_analysis.png` | Prediction quality breakdown |
 
 ---
 
@@ -137,7 +193,6 @@ openai-whisper
 torch
 torchaudio
 datasets
-transformers
 jiwer
 gradio
 soundfile
@@ -148,41 +203,28 @@ arabic-reshaper
 python-bidi
 pandas
 numpy
+scipy
 ```
 
 ---
 
-## 🔍 Notebooks Overview
+## ⚠️ Notes
 
-### `eda.ipynb`
-- Audio waveform visualization
-- Log-Mel spectrogram analysis
-- MFCC feature extraction
-- Duration & word count distributions
-- Dataset comparison (ASC vs Common Voice)
-- Signal quality analysis (SNR, RMS)
-- Word frequency analysis
-
-### `main.ipynb`
-- Whisper model family comparison
-- Full transcription of Arabic Speech Corpus (100 files)
-- Full transcription of Common Voice Arabic (100 samples)
-- WER & CER evaluation with visualizations
-- Best/worst prediction analysis
-- Gradio interactive demo interface
+- Running on **CPU** takes ~15-25 min per 100 files. GPU reduces this to ~2-3 min.
+- The Arabic Speech Corpus references are in **Buckwalter phonetic format** — WER is calculated on Common Voice Arabic only (Arabic script references).
+- WER of 52.17% on crowd-sourced dialectal Arabic is expected without fine-tuning — CER of 21.46% shows character-level accuracy is much better.
 
 ---
-
 
 ## 📚 References
 
 - [Whisper: Robust Speech Recognition via Large-Scale Weak Supervision](https://arxiv.org/abs/2212.04356) — Radford et al., OpenAI (2022)
 - [Arabic Speech Corpus](https://en.arabicspeechcorpus.com) — Halabi (2016)
 - [Mozilla Common Voice](https://commonvoice.mozilla.org) — Mozilla Foundation
-- [jiwer — WER computation](https://github.com/jitsi/jiwer)
+- [jiwer — WER/CER computation](https://github.com/jitsi/jiwer)
 
 ---
 
 ## 👤 Author
 
-**Nour Ezz** 
+**Nour Ezz**
