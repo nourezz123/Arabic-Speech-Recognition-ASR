@@ -1,0 +1,6 @@
+Metric,Arabic Speech Corpus,Common Voice Arabic
+Samples,100,100
+WER,N/A (phonetic refs),52.17%
+CER,N/A (phonetic refs),21.46%
+Word Accuracy,Visually accurate ✅,47.83%
+Avg Duration (s),10.30s,4.52s
